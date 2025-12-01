@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Photo Frame - Seneca Polytechnic</title>
+    <style>
+        /* Theme Variables */
+        :root {
+            --font-family-display: Arial, sans-serif;
+            --font-weight-display: 600;
+            --font-family-content: Arial, sans-serif;
+            --font-weight-content: 400;
+            --font-size-content: 16px;
+            --line-height-content: 1.4;
+        }
+
+        /* DARK THEME */
+        body.theme-dark {
+            --color-bg-base: #0f172a;
+            --color-bg-elevated: #020617;
+            --color-bg-surface: #1e293b;
+            --color-bg-muted: #334155;
+            --color-text-primary: #f1f5f9;
+            --color-text-secondary: #cbd5e1;
+            --color-text-muted: #94a3b8;
+            --color-text-accent: #38bdf8;
+            --color-primary: #38bdf8;
+            --color-primary-foreground: #0f172a;
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-content);
+            font-weight: var(--font-weight-content);
+            font-size: var(--font-size-content);
+            line-height: var(--line-height-content);
+            overflow-x: hidden;
+        }
+
+        /* Slide Container */
+        .slide {
+            width: 960px;
+            height: 540px;
+            margin: 0 auto 20px;
+            display: flex;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Layout Utilities */
+        .row { flex-direction: row; }
+        .col { flex-direction: column; }
+        .center {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .space-between { justify-content: space-between; }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .fill-width { flex: 1; }
+        .fill-height { flex: 1; display: flex; flex-direction: column; }
+
+        /* Spacing */
+        .gap-sm { gap: 0.5rem; }
+        .gap-md { gap: 1rem; }
+        .gap-lg { gap: 1.5rem; }
+        .gap-xl { gap: 2rem; }
+        .gap-2xl { gap: 3rem; }
+
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .p-12 { padding: 3rem; }
+        .p-16 { padding: 4rem; }
+
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mb-12 { margin-bottom: 3rem; }
+
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .mt-8 { margin-top: 2rem; }
+        .mt-12 { margin-top: 3rem; }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-family-display);
+            font-weight: var(--font-weight-display);
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        h1 { font-size: 3rem; }
+        h2 { font-size: 2.25rem; }
+        h3 { font-size: 1.75rem; }
+        h4 { font-size: 1.5rem; }
+        h5 { font-size: 1.25rem; }
+        h6 { font-size: 1rem; }
+
+        .text-6xl { font-size: 3.75rem; }
+        .text-5xl { font-size: 3rem; }
+        .text-4xl { font-size: 2.25rem; }
+        .text-3xl { font-size: 1.875rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-base { font-size: 1rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-xs { font-size: 0.75rem; }
+
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .font-medium { font-weight: 500; }
+        .font-normal { font-weight: 400; }
+
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+
+        .opacity-90 { opacity: 0.9; }
+        .opacity-80 { opacity: 0.8; }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 2rem;
+            line-height: 1.8;
+        }
+
+        ul li { list-style: disc; }
+        li { margin-bottom: 0.75rem; }
+        li:last-child { margin-bottom: 0; }
+
+        /* Code Styling */
+        code {
+            background-color: #334155;
+            color: #06b6d4;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        pre {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            overflow-x: auto;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        /* Card Styles */
+        .card-rect {
+            padding: 2rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="theme-dark">
+
+    <!-- SLIDE 1: Title -->
+    <section class="slide p-16 col center" style="background-color: #020617; color: #f1f5f9;">
+        <h1 class="text-6xl mb-4" style="color: #38bdf8;">Interactive Photo Frame</h1>
+        <p class="text-2xl mb-8" style="color: #cbd5e1;">Web Programming Journey at Seneca Polytechnic</p>
+        <p class="text-sm" style="color: #94a3b8;">Exploring Creative Code & AI-Assisted Development</p>
+        <p class="text-sm mt-12" style="color: #94a3b8;">High School Programming Learning Day • Seneca Polytechnic</p>
+    </section>
+
+    <!-- SLIDE 2: Today's Journey -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">What You'll Discover Today</h2>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>The evolution of creative programming with Processing</li>
+            <li>How JavaScript brought Processing to the web</li>
+            <li>Building interactive photo frames with code</li>
+            <li>Using AI to simplify web development</li>
+            <li>Your path to computer science at Seneca</li>
+        </ul>
+    </section>
+
+    <!-- SLIDE 3: Processing Origins -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">The Birth of Processing (2001)</h2>
+        <p class="text-lg mb-6" style="color: #cbd5e1;">
+            [translate:Ben Fry] and [translate:Casey Reas], researchers at MIT Media Lab, created Processing to make programming fun for artists and designers.
+        </p>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>Built on Java for visual graphics and interaction</li>
+            <li>Designed with simple, intuitive syntax</li>
+            <li>Let creatives "sketch" with code</li>
+        </ul>
+    </section>
+
+    <!-- SLIDE 4: Processing.js Revolution -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">Processing.js (2008) - Bringing Code to the Web</h2>
+        <p class="text-lg mb-6" style="color: #cbd5e1;">
+            [translate:John Resig], creator of jQuery, built a transpiler that converts Processing code to JavaScript
+        </p>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>Runs in web browsers without plugins</li>
+            <li>Opens HTML5 Canvas for interactive graphics</li>
+            <li>Seneca students contributed significantly to this project</li>
+        </ul>
+    </section>
+
+    <!-- SLIDE 5: Seneca's Role -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">Seneca's Contribution</h2>
+        <p class="text-lg mb-6" style="color: #cbd5e1;">
+            Seneca students played a major role in advancing Processing.js, especially the 3D components
+        </p>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>Applied research partnership with Seneca College</li>
+            <li>3D graphics and advanced features development</li>
+            <li>Bridging art and computer science education</li>
+        </ul>
+    </section>
+
+    <!-- SLIDE 6: Project Overview -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">The Interactive Photo Frame Project</h2>
+        <p class="text-lg mb-6" style="color: #cbd5e1;">
+            A web-based interactive application combining photography, animation, and web technologies
+        </p>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>Live demo: catherine-leung.github.io/photoframe/</li>
+            <li>Fully customizable with code changes</li>
+            <li>Real-world example of web programming</li>
+        </ul>
+    </section>
+
+    <!-- SLIDE 7: Technology Stack -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">Technologies Used</h2>
+        <div class="fill-height row gap-lg">
+            <div class="fill-width" style="background-color: #1e293b; color: #f1f5f9; padding: 1.5rem; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);">
+                <h3 style="color: #38bdf8; margin-bottom: 1rem;">Frontend</h3>
+                <ul style="color: #cbd5e1; font-size: 1rem;">
+                    <li>HTML5 Canvas</li>
+                    <li>JavaScript (ES6+)</li>
+                    <li>CSS3 Styling</li>
+                </ul>
+            </div>
+            <div class="fill-width" style="background-color: #1e293b; color: #f1f5f9; padding: 1.5rem; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);">
+                <h3 style="color: #38bdf8; margin-bottom: 1rem;">Frameworks</h3>
+                <ul style="color: #cbd5e1; font-size: 1rem;">
+                    <li>Processing.js Library</li>
+                    <li>Web APIs</li>
+                    <li>SVG Graphics</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: How It Works -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">How the Photo Frame Works</h2>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>Loads and displays images dynamically</li>
+            <li>Responds to user mouse and keyboard input</li>
+            <li>Creates smooth animations and transitions</li>
+            <li>Completely interactive and responsive</li>
+        </ul>
+    </section>
+
+    <!-- SLIDE 9: Code Customization - Part 1 -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-4" style="color: #38bdf8;">Changing the Photo Frame - Simple Customization</h2>
+        <p class="text-sm mb-4" style="color: #cbd5e1;">
+            Let's see how easy it is to modify the behavior with basic code changes:
+        </p>
+        <pre style="font-size: 0.8rem;"><span style="color: #06b6d4;">// Change frame background color</span>
+background(245, 232, 220);  <span style="color: #06b6d4;">// Beige color</span>
+
+<span style="color: #06b6d4;">// Adjust animation speed</span>
+let speed = 2;  <span style="color: #06b6d4;">// Increase from 1 for faster animations</span></pre>
+    </section>
+
+    <!-- SLIDE 10: Code Customization - Part 2 -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-4" style="color: #38bdf8;">Changing the Photo Frame - More Features</h2>
+        <pre style="font-size: 0.8rem;"><span style="color: #06b6d4;">// Add frame border</span>
+stroke(50, 50, 50);
+strokeWeight(8);
+
+<span style="color: #06b6d4;">// Control rotation speed</span>
+rotationSpeed = 0.05;  <span style="color: #06b6d4;">// Slower rotation</span></pre>
+    </section>
+
+    <!-- SLIDE 11: AI-Assisted Development -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">AI Tools in Web Development</h2>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>AI assistants help explain code functionality</li>
+            <li>Generate code snippets for new features</li>
+            <li>Debug problems and optimize performance</li>
+            <li>Speed up learning and development process</li>
+        </ul>
+    </section>
+
+    <!-- SLIDE 12: AI Demo Setup -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">Demo: Without AI Assistance</h2>
+        <p class="text-lg mb-6" style="color: #cbd5e1;">
+            Traditional approach: manually coding feature changes
+        </p>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>Search documentation for correct syntax</li>
+            <li>Trial and error testing</li>
+            <li>Debugging by reading error messages</li>
+        </ul>
+    </section>
+
+    <!-- SLIDE 13: AI Demo Result -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">Demo: With AI Assistance</h2>
+        <p class="text-lg mb-6" style="color: #cbd5e1;">
+            Modern approach: AI-powered development
+        </p>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>AI explains what each line of code does</li>
+            <li>Suggests code for desired functionality</li>
+            <li>Identifies bugs and explains solutions</li>
+            <li>Dramatically speeds up development</li>
+        </ul>
+    </section>
+
+    <!-- SLIDE 14: Programming at Seneca -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">Computer Programming at Seneca Polytechnic</h2>
+        <p class="text-lg mb-6" style="color: #cbd5e1;">
+            Learn industry-relevant skills with hands-on projects
+        </p>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>Web development and full-stack programming</li>
+            <li>Graphics and game development</li>
+            <li>Cutting-edge tools and frameworks</li>
+            <li>Real-world industry partnerships</li>
+        </ul>
+    </section>
+
+    <!-- SLIDE 15: Your Learning Journey -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">Your Path Forward</h2>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>Start with fundamentals: HTML, CSS, JavaScript</li>
+            <li>Progress to interactive web applications</li>
+            <li>Explore graphics, animation, and creativity</li>
+            <li>Leverage modern tools and AI assistance</li>
+        </ul>
+    </section>
+
+    <!-- SLIDE 16: Key Takeaways -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">Key Takeaways</h2>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>Programming connects creativity and logic</li>
+            <li>Web technologies have evolved significantly</li>
+            <li>AI makes development more accessible</li>
+            <li>Seneca provides the path to your tech career</li>
+        </ul>
+    </section>
+
+    <!-- SLIDE 17: Live Demo Invitation -->
+    <section class="slide p-16 col center" style="background-color: #1e293b; color: #f1f5f9;">
+        <h2 class="text-4xl mb-6" style="color: #38bdf8;">Live Interactive Demo</h2>
+        <p class="text-2xl mb-8" style="color: #cbd5e1;">Explore the Photo Frame</p>
+        <p class="text-lg" style="color: #94a3b8;">catherine-leung.github.io/photoframe/</p>
+    </section>
+
+    <!-- SLIDE 18: Q&A and Resources -->
+    <section class="slide p-16 col center" style="background-color: #020617; color: #f1f5f9;">
+        <h2 class="text-5xl mb-8" style="color: #38bdf8;">Questions?</h2>
+        <p class="text-xl mb-4" style="color: #cbd5e1;">Learn More About Seneca Programs</p>
+        <p class="text-lg" style="color: #94a3b8;">Computer Programming • Web Development • Game Design</p>
+        <p class="text-lg mt-8" style="color: #94a3b8;">senecapolytechnic.ca</p>
+    </section>
+
+</body>
+</html>
