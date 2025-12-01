@@ -11,5 +11,5 @@ Special Thanks:
 * Andor Salga - for his sketches which I used and modified liberally
 * Raymond Wong and Samson Chan - for the pretty photos
 
-** https://github.com/catherine-leung/photoframe   github link
-** https://catherine-leung.github.io/photoframe/    public website
+* https://github.com/catherine-leung/photoframe   github link
+* https://catherine-leung.github.io/photoframe/    public website
